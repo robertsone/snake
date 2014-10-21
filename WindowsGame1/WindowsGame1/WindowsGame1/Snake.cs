@@ -14,94 +14,150 @@ namespace WindowsGame1
 {
     class Snake
     {
-        string der = "LEFT";
-        public List<Vector2> snake = new List<Vector2>();
+        string der = "UP";
+        public List<Vector2> segments = new List<Vector2>();
         private Texture2D snakeTexture;
         int updatetimer = 0;
         bool lose = false;
         int toadd = 0;
         int snakesize = 16;
 
-        public Snake(Texture2D texture, Vector2 location)
+        Keys up, down, left, right;
+
+        public Snake(Texture2D texture, Vector2 location, int snakesize, Keys up, Keys down, Keys left, Keys right)
         {
             this.snakeTexture = texture;
+            segments.Add(location);
+            segments.Add(location + new Vector2(0, 1));
+            segments.Add(location + new Vector2(0, 2));
+            segments.Add(location + new Vector2(0, 3));
+            segments.Add(location + new Vector2(0, 4));
 
-            snake.Add(location);
-            snake.Add(location + new Vector2(0, 1));
-            snake.Add(location + new Vector2(0, 2));
-            snake.Add(location + new Vector2(0, 3));
-            snake.Add(location + new Vector2(0, 4));
+            this.snakesize = snakesize;
+
+            this.up = up;
+            this.down = down;
+            this.left = left;
+            this.right = right;
+
+        }
+
+        public Vector2 Location
+        {
+            get { return segments[0]; }
+        }
+        public void finishgame()
+        {
+            while (true)
+            {
+            }
+        }
+        public void Grow(int amount)
+        {
+            toadd = amount;
+
+        }
+
+        public bool isColliding(Snake other)
+        {
+            for (int i = 0; i < other.segments.Count; i++)
+            {
+                if (this.segments[0] == other.segments[i])
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void Update(GameTime gameTime)
         {
             KeyboardState kb = Keyboard.GetState();
-            if (kb.IsKeyDown(Keys.Down) && der != "UP")
+            if (kb.IsKeyDown(down) && der != "UP")
                 der = "DOWN";
-            if (kb.IsKeyDown(Keys.Left) && der != "RIGHT")
+            if (kb.IsKeyDown(left) && der != "RIGHT")
                 der = "LEFT";
-            if (kb.IsKeyDown(Keys.Up) && der != "DOWN")
+            if (kb.IsKeyDown(up) && der != "DOWN")
                 der = "UP";
-            if (kb.IsKeyDown(Keys.Right) && der != "LEFT")
+            if (kb.IsKeyDown(right) && der != "LEFT")
                 der = "RIGHT";
 
             updatetimer += 1;
             if (updatetimer >= 5 && lose != true)
             {
                 updatetimer = 0;
-                for (int i = 0; i < snake.Count; i++)
+                for (int i = 0; i < segments.Count; i++)
                 {
-                    int newi = snake.Count - i - 1;
+                    int newi = segments.Count - i - 1;
                     if (newi != 0)
-                        if (toadd >= 1 && newi == snake.Count - 1)
+                        if (toadd >= 1 && newi == segments.Count - 1)
                         {
                             toadd -= 1;
-                            snake.Add(snake[newi]);
-                            snake[newi] = snake[newi - 1];
+                            segments.Add(segments[newi]);
+                            segments[newi] = segments[newi - 1];
 
                         }
                         else
                         {
-                            snake[newi] = snake[newi - 1];
+                            segments[newi] = segments[newi - 1];
                         }
                     else
                     {
 
                         if (der == "DOWN")
                         {
-                            snake[0] = new Vector2(snake[0].X, snake[0].Y + 1);
+                            segments[0] = new Vector2(segments[0].X, segments[0].Y + 1);
                         }
                         if (der == "LEFT")
                         {
-                            snake[0] = new Vector2(snake[0].X - 1, snake[0].Y);
+                            segments[0] = new Vector2(segments[0].X - 1, segments[0].Y);
                         }
                         if (der == "UP")
                         {
-                            snake[0] = new Vector2(snake[0].X, snake[0].Y - 1);
+                            segments[0] = new Vector2(segments[0].X, segments[0].Y - 1);
                         }
                         if (der == "RIGHT")
                         {
-                            snake[0] = new Vector2(snake[0].X + 1, snake[0].Y);
+                            segments[0] = new Vector2(segments[0].X + 1, segments[0].Y);
                         }
                     }
 
                 }
             }
-            for (int i = 0; i < snake.Count; i++)
+
+            for (int i = 0; i < segments.Count; i++)
             {
-                if (snake[0] == snake[i] && i != 0)
+                if (segments[0] == segments[i] && i != 0)
                 {
-                    lose = true;
+                    finishgame();
                     int thing = i;
                 }
+                if (segments[i].X > 50)
+                {
+                    segments[i] = new Vector2(segments[i].X - 51, segments[i].Y);
+                }
+                else if (segments[i].X < -1)
+                {
+                    segments[i] = new Vector2(segments[i].X + 51, segments[i].Y);
+                }
+                else if (segments[i].Y > 30)
+                {
+                    segments[i] = new Vector2(segments[i].X, segments[i].Y-31);
+                }
+                else if (segments[i].Y < -1)
+                {
+                    segments[i] = new Vector2(segments[i].X, segments[i].Y+31);
+                }
             }
+
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch,Color color)
         {
-            for (int i = 0; i < snake.Count; i++)
+            for (int i = 0; i < segments.Count; i++)
             {
-                spriteBatch.Draw(snakeTexture, new Rectangle((int)snake[i].X * snakesize, (int)snake[i].Y * snakesize, snakesize, snakesize), new Rectangle(0, 0, snakesize, snakesize), Color.Red);
+                spriteBatch.Draw(snakeTexture, new Rectangle((int)segments[i].X * snakesize, (int)segments[i].Y * snakesize, snakesize, snakesize), new Rectangle(0, 0, snakesize, snakesize), color);
             }
         }
     }

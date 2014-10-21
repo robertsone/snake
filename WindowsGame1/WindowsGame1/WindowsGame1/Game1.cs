@@ -22,19 +22,35 @@ namespace WindowsGame1
         
         Texture2D squareTexture;
 
-        Snake snake;
+        List <Snake> snakes;
         Vector2 food = new Vector2(10,10);
         int snakesize = 16;
+        Color color=Color.Yellow;
+        int colorcounter = 0;
 
-        bool spawnfood = true;
-
-        
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
-
+        public Color getcolor()
+        {
+            Color color= Color.Yellow;
+            int number = rand.Next(1, 12);
+            if (number == 1) color = Color.Aqua;
+            if (number == 2) color = Color.Red;
+            if (number == 3) color = Color.Gray;
+            if (number == 4) color = Color.Green;
+            if (number == 5) color = Color.Black;
+            if (number == 6) color = Color.Blue;
+            if (number == 7) color = Color.Yellow;
+            if (number == 8) color = Color.Magenta;
+            if (number == 9) color = Color.Lavender;
+            if (number == 10) color = Color.Maroon;
+            if (number == 11) color = Color.Purple;
+            if (number == 12) color = Color.Pink;
+            return color;
+        }
         
         protected override void Initialize()
         {
@@ -52,7 +68,11 @@ namespace WindowsGame1
             spriteBatch = new SpriteBatch(GraphicsDevice);
             squareTexture = Content.Load<Texture2D>(@"SQUARE");
 
-            snake = new Snake(squareTexture, new Vector2(20, 20));
+            snakes = new List<Snake>();
+
+            snakes.Add(new Snake(squareTexture, new Vector2(45, 15), snakesize, Keys.Up, Keys.Down, Keys.Left, Keys.Right));
+            snakes.Add(new Snake(squareTexture, new Vector2(5, 15), snakesize, Keys.W, Keys.S, Keys.A, Keys.D));
+
 
         }
 
@@ -65,40 +85,44 @@ namespace WindowsGame1
         
         protected override void Update(GameTime gameTime)
         {
-
-            /*
-            if (snake[0] == food)
+            for (int i = 0; i < snakes.Count; i++)
             {
-                spawnfood = true;
-                toadd = 2;
+                for (int j = 0; j < snakes.Count; j++)
+                {
+
+                    if (i != j && snakes[i].isColliding(snakes[j]))
+                    {
+                        snakes[i].finishgame();
+                    }
+                }
+
+                if (snakes[i].Location == food)
+                {
+                    food = new Vector2(rand.Next(1, 49), rand.Next(1, 29));
+                    snakes[i].Grow(3);
+                }
+
+                snakes[i].Update(gameTime);
             }
-            */
-
-            if (spawnfood == true)
-            {
-                food = new Vector2(rand.Next(1,49), rand.Next(1,29));
-                spawnfood = false;
-            }
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
-
-
-            snake.Update(gameTime);
-
-            
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            colorcounter += 1;
+            if (colorcounter >= 20)
+            {
+                color = getcolor();
+                colorcounter = 0;
+            }
+            
+            GraphicsDevice.Clear(color);
 
             spriteBatch.Begin();
 
-            snake.Draw(spriteBatch);
-
-            spriteBatch.Draw(squareTexture, new Rectangle((int)food.X * snakesize, (int)food.Y * snakesize, snakesize, snakesize), new Rectangle(0, 0, snakesize, snakesize), Color.Green);
+            
+            spriteBatch.Draw(squareTexture, new Rectangle((int)food.X * snakesize, (int)food.Y * snakesize, snakesize, snakesize), new Rectangle(0, 0, snakesize, snakesize), Color.Red);
             spriteBatch.End();
             base.Draw(gameTime);
         }
