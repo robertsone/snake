@@ -58,17 +58,18 @@ namespace WindowsGame1
 
         }
 
-        public bool isColliding(Snake other)
+
+        public int isColliding(Snake other)
         {
-            for (int i = 0; i < other.segments.Count; i++)
+            for (int i = 1; i < other.segments.Count; i++)
             {
                 if (this.segments[0] == other.segments[i])
                 {
-                    return true;
+                    return i; 
                 }
             }
 
-            return false;
+            return -1;
         }
 
         public void Update(GameTime gameTime)
@@ -87,6 +88,40 @@ namespace WindowsGame1
             if (updatetimer >= 5 && lose != true)
             {
                 updatetimer = 0;
+
+                
+                for (int i = 0; i < toadd; i++)
+                {
+                    segments.Add(segments[0]);
+                }
+
+                toadd = 0;
+
+                for (int i = segments.Count - 1; i > 0; i--)
+                {
+                    segments[i] = segments[i - 1];
+                }
+
+                if (der == "DOWN")
+                {
+                    segments[0] = new Vector2(segments[0].X, segments[0].Y + 1);
+                }
+                if (der == "LEFT")
+                {
+                    segments[0] = new Vector2(segments[0].X - 1, segments[0].Y);
+                }
+                if (der == "UP")
+                {
+                    segments[0] = new Vector2(segments[0].X, segments[0].Y - 1);
+                }
+                if (der == "RIGHT")
+                {
+                    segments[0] = new Vector2(segments[0].X + 1, segments[0].Y);
+                }
+                
+
+
+                /*
                 for (int i = 0; i < segments.Count; i++)
                 {
                     int newi = segments.Count - i - 1;
@@ -124,13 +159,14 @@ namespace WindowsGame1
                     }
 
                 }
+                */
             }
 
             for (int i = 0; i < segments.Count; i++)
             {
                 if (segments[0] == segments[i] && i != 0)
                 {
-                    finishgame();
+                    //finishgame();
                     int thing = i;
                 }
                 if (segments[i].X > 50)
@@ -153,11 +189,11 @@ namespace WindowsGame1
 
         }
 
-        public void Draw(SpriteBatch spriteBatch,Color color)
+        public void Draw(SpriteBatch spriteBatch)
         {
             for (int i = 0; i < segments.Count; i++)
             {
-                spriteBatch.Draw(snakeTexture, new Rectangle((int)segments[i].X * snakesize, (int)segments[i].Y * snakesize, snakesize, snakesize), new Rectangle(0, 0, snakesize, snakesize), color);
+                spriteBatch.Draw(snakeTexture, new Rectangle((int)segments[i].X * snakesize, (int)segments[i].Y * snakesize, snakesize, snakesize), new Rectangle(0, 0, snakesize, snakesize), Color.Red);
             }
         }
     }

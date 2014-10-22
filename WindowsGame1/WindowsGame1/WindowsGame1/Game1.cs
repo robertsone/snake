@@ -38,7 +38,7 @@ namespace WindowsGame1
             Color color= Color.Yellow;
             int number = rand.Next(1, 12);
             if (number == 1) color = Color.Aqua;
-            if (number == 2) color = Color.Red;
+            if (number == 2) color = Color.White;
             if (number == 3) color = Color.Gray;
             if (number == 4) color = Color.Green;
             if (number == 5) color = Color.Black;
@@ -89,17 +89,25 @@ namespace WindowsGame1
             {
                 for (int j = 0; j < snakes.Count; j++)
                 {
-
-                    if (i != j && snakes[i].isColliding(snakes[j]))
+                    
+                    //if (i != j)
                     {
-                        snakes[i].finishgame();
+                        int index = snakes[i].isColliding(snakes[j]);
+
+                        if (index != -1)
+                        {
+                            for (int k = snakes[j].segments.Count-1; k >= index; k--)
+                            {
+                                snakes[j].segments.RemoveAt(k);
+                            }
+                        }
                     }
                 }
 
                 if (snakes[i].Location == food)
                 {
                     food = new Vector2(rand.Next(1, 49), rand.Next(1, 29));
-                    snakes[i].Grow(3);
+                    snakes[i].Grow(rand.Next(0,5));
                 }
 
                 snakes[i].Update(gameTime);
@@ -111,17 +119,20 @@ namespace WindowsGame1
         protected override void Draw(GameTime gameTime)
         {
             colorcounter += 1;
-            if (colorcounter >= 20)
+            if (colorcounter >= 60)
             {
                 color = getcolor();
                 colorcounter = 0;
             }
-            
             GraphicsDevice.Clear(color);
+            
 
             spriteBatch.Begin();
 
-            
+            for (int i = 0; i < snakes.Count; i++)
+            {
+                snakes[i].Draw(spriteBatch);
+            }
             spriteBatch.Draw(squareTexture, new Rectangle((int)food.X * snakesize, (int)food.Y * snakesize, snakesize, snakesize), new Rectangle(0, 0, snakesize, snakesize), Color.Red);
             spriteBatch.End();
             base.Draw(gameTime);
