@@ -28,6 +28,9 @@ namespace WindowsGame1
         Color color=Color.Yellow;
         int colorcounter = 0;
 
+        int score1 = 0;
+        int score2 = 0;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -106,6 +109,8 @@ namespace WindowsGame1
 
                 if (snakes[i].Location == food)
                 {
+                    score1 += snakes[1].segments.Count;
+                    score2 += snakes[0].segments.Count;
                     food = new Vector2(rand.Next(1, 49), rand.Next(1, 29));
                     snakes[i].Grow(rand.Next(0,5));
                 }
@@ -118,6 +123,9 @@ namespace WindowsGame1
 
         protected override void Draw(GameTime gameTime)
         {
+            
+            Window.Title = "Player 1 score:  " + score1 + "  Player 2 score:   " + score2;
+
             colorcounter += 1;
             if (colorcounter >= 60)
             {

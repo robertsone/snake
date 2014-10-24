@@ -87,6 +87,7 @@ namespace WindowsGame1
             updatetimer += 1;
             if (updatetimer >= 5 && lose != true)
             {
+
                 updatetimer = 0;
 
                 
